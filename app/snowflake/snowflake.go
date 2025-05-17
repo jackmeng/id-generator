@@ -30,6 +30,8 @@ var (
 	stepMask  = -1 ^ (-1 << stepBits)
 	timeShift = nodeBits + stepBits
 	nodeShift = stepBits
+
+	base62Chars = []byte("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
 )
 
 type ID int64
@@ -144,4 +146,17 @@ func (n *node) Generate() ID {
 	)
 
 	return r
+}
+
+func (id ID) EncodeBase62() string {
+	if id == 0 {
+		return "0"
+	}
+
+	result := []byte{}
+	for id > 0 {
+		result = append([]byte{base62Chars[id%62]}, result...)
+		id = id / 62
+	}
+	return string(result)
 }

@@ -19,6 +19,7 @@ func main() {
 	router.Use(gin.Recovery())
 	router.GET("/generate/:nodeNo", func(c *gin.Context) {
 		nodeNo := c.Param("nodeNo")
+		idType := c.Query("idType")
 		nodeNoInt64, err := strconv.ParseInt(nodeNo, 10, 64)
 		if err != nil {
 			c.JSON(200, gin.H{
@@ -41,13 +42,24 @@ func main() {
 			})
 			return
 		}
-		c.JSON(200, gin.H{
-			"code":    200,
-			"message": "success",
-			"data": gin.H{
-				"id": id,
-			},
-		})
+		if idType == "string" {
+			c.JSON(200, gin.H{
+				"code":    200,
+				"message": "success",
+				"data": gin.H{
+					"id": id.EncodeBase62(),
+				},
+			})
+		} else {
+			c.JSON(200, gin.H{
+				"code":    200,
+				"message": "success",
+				"data": gin.H{
+					"id": id,
+				},
+			})
+		}
+
 	})
 
 	// 拼接监听地址
